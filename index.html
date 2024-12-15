@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2b2f Minecraft Server</title>
+    <style>
+        /* Global Styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1c1c1c;
+            color: #d3d3d3;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Navigation Bar */
+        nav {
+            background-color: #333;
+            padding: 10px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-left: 20px; /* Add some padding */
+        }
+
+        nav a {
+            color: #d3d3d3;
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 18px;
+            padding: 10px 15px;
+        }
+
+        nav a:hover, nav a.active {
+            background-color: #444;
+            border-radius: 5px;
+        }
+
+        /* Logo */
+        .logo {
+            width: 50px;
+        }
+
+        /* Main Content Area */
+        .content {
+            padding: 20px;
+            display: none;
+        }
+
+        .content.active {
+            display: block;
+        }
+
+        /* Section Styling */
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #2c2c2c;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .section h2 {
+            margin-top: 0;
+        }
+
+        .stats-grid {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .stats-box {
+            background: #444;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+            flex: 1;
+            margin: 0 10px;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 10px;
+            background: #333;
+            margin-top: 20px;
+            color: #d3d3d3;
+        }
+
+        /* Search Input */
+        .search {
+            display: flex;
+            align-items: center;
+        }
+
+        .search input {
+            margin-right: 10px;
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav>
+        <img src="2b2f.png" alt="2b2f Logo" class="logo">
+        <div>
+            <a href="#" class="tab-link active" data-tab="home">Home</a>
+            <a href="#" class="tab-link" data-tab="stats">Stats</a>
+            <a href="#" class="tab-link" data-tab="about">About</a>
+        </div>
+    </nav>
+
+    <!-- Home Content -->
+    <div id="home" class="content active">
+        <div class="section">
+            <h2>Welcome to 2b2f</h2>
+            <p>2b2f is an anarchy Minecraft server with no rules and complete freedom. Explore, survive, and create chaos in the most unfiltered Minecraft experience.</p>
+        </div>
+
+        <div class="section">
+            <h2>How to Join</h2>
+            <p>Simply add our server to your Minecraft client:</p>
+            <ul>
+                <li><strong>Server IP:</strong> 2b2f.xyz</li>
+                <li><strong>Version:</strong> 1.12.2</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Stats Content -->
+    <div id="stats" class="content">
+        <div class="section">
+            <h2>Server Stats</h2>
+            <div class="stats-grid">
+                <div class="stats-box">
+                    <h3>Status</h3>
+                    <p id="server-status">Checking...</p>
+                </div>
+                <div class="stats-box">
+                    <h3>Players Online</h3>
+                    <p id="players-online">0</p>
+                </div>
+                <div class="stats-box">
+                    <h3>Last Joined</h3>
+                    <p id="last-joined">N/A</p>
+                </div>
+            </div>
+            <div class="search">
+                <input type="text" id="player-search" placeholder="Search for a player...">
+                <button onclick="searchPlayer()">Search</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- About Content -->
+    <div id="about" class="content">
+        <div class="section">
+            <h2>About 2b2f</h2>
+            <p>2b2f is an experimental Minecraft server built to test the limits of anarchy gameplay. With no admins and no rules, players are free to build, destroy, and shape the server however they see fit.</p>
+        </div>
+
+        <div class="section">
+            <h2>Our Community</h2>
+            <p>Join our Discord and connect with other players to share experiences, form alliances, or find rivals:</p>
+            <a href="#" class="button">Join Our Discord</a>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>© 2024 2b2f - Anarchy Minecraft Server</p>
+    </footer>
+
+    <script>
+        // Simple Tab Navigation
+        const tabs = document.querySelectorAll('.tab-link');
+        const contents = document.querySelectorAll('.content');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', (e) => {
+                e.preventDefault();
+
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+
+                contents.forEach(c => c.classList.remove('active'));
+                const target = document.getElementById(tab.dataset.tab);
+                target.classList.add('active');
+            });
+        });
+
+        // Fetch Server Stats (Replace with real API data)
+        fetch('https://api.mcsrvstat.us/2/2b2f.xyz')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('server-status').textContent = data.online ? 'Online' : 'Offline';
+                document.getElementById('players-online').textContent = data.players ? data.players.online : 0;
+                document.getElementById('last-joined').textContent = data.players ? data.players.list[0] || 'N/A' : 'N/A';
+            })
+            .catch(() => {
+                document.getElementById('server-status').textContent = 'Unable to fetch';
+                document.getElementById('players-online').textContent = '0';
+                document.getElementById('last-joined').textContent = 'N/A';
+            });
+
+        // Player Search
+        function searchPlayer() {
+            const playerName = document.getElementById('player-search').value.trim();
+            if (playerName === '') return;
+
+            fetch(`https://api.mcsrvstat.us/2/2b2f.xyz/player/${playerName}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        document.getElementById('last-joined').textContent = 'Player not found';
+                    } else {
+                        document.getElementById('last-joined').textContent = data.last_joined || 'N/A';
+                    }
+                })
+                .catch(() => {
+                    document.getElementById('last-joined').textContent = 'Unable to fetch';
+                });
+        }
+    </script>
+</body>
+</html>
