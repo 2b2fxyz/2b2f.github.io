@@ -122,6 +122,15 @@
             margin-left: 10px;
         }
 
+        .stats-box {
+            background: #444;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+            flex: 1;
+            margin: 0 10px;
+        }
+
         /* Transition Effects */
 nav a {
     transition: background-color 0.3s ease, transform 0.3s ease;
@@ -151,6 +160,7 @@ nav a:hover, nav a.active {
 }
 
 /* Tab transition effect */
+/* Content Section Transition */
 .content {
     opacity: 0;
     visibility: hidden;
@@ -192,6 +202,24 @@ nav a:hover, nav a.active {
                 Explore a world scarred by battles, rich in player history, and filled with monumental builds. Survive, conquer, or destroy—the choice is yours.
             </p>
             <p><strong>Server IP:</strong> <span style="color: #00bfff;">2b2f.xyz</span> | <strong>Version:</strong> 1.12.2</p>
+        </div>
+
+        <div class="section">
+            <h2>Server Stats</h2>
+            <div class="stats-grid">
+                <div class="stats-box">
+                    <h3>Status</h3>
+                    <p id="server-status">Checking...</p>
+                </div>
+                <div class="stats-box">
+                    <h3>Players Online</h3>
+                    <p id="players-online">0</p>
+                </div>
+                <div class="stats-box">
+                    <h3>Last Joined</h3>
+                    <p id="last-joined">N/A</p>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -281,12 +309,51 @@ nav a:hover, nav a.active {
         tabs.forEach(tab => {
             tab.addEventListener('click', (e) => {
                 e.preventDefault();
+                
+                // Remove 'active' class from all tabs
                 tabs.forEach(t => t.classList.remove('active'));
+                // Add 'active' class to the clicked tab
                 tab.classList.add('active');
+                
+                // Remove 'active' class from all content sections
                 contents.forEach(c => c.classList.remove('active'));
-                document.getElementById(tab.dataset.tab).classList.add('active');
+                // Add 'active' class to the corresponding content section
+                const contentId = tab.dataset.tab;
+                document.getElementById(contentId).classList.add('active');
             });
         });
+
+
+        fetch('https://api.mcsrvstat.us/2/2b2f.xyz')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('server-status').textContent = data.online ? 'Online' : 'Offline';
+                document.getElementById('players-online').textContent = data.players ? data.players.online : 0;
+                document.getElementById('last-joined').textContent = data.players ? data.players.list[0] || 'N/A' : 'N/A';
+            })
+            .catch(() => {
+                document.getElementById('server-status').textContent = 'Unable to fetch';
+                document.getElementById('players-online').textContent = '0';
+                document.getElementById('last-joined').textContent = 'N/A';
+            });
+        // Player Search
+        function searchPlayer() {
+            const playerName = document.getElementById('player-search').value.trim();
+            if (playerName === '') return;
+            fetch(`https://api.mcsrvstat.us/2/2b2f.xyz/player/${playerName}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        document.getElementById('last-joined').textContent = 'Player not found';
+                    } else {
+                        document.getElementById('last-joined').textContent = data.last_joined || 'N/A';
+                    }
+                })
+                .catch(() => {
+                    document.getElementById('last-joined').textContent = 'Unable to fetch';
+                });
+        }
+        setInterval(fetchServerStats, 60000);
     </script>
 </body>
 </html>
